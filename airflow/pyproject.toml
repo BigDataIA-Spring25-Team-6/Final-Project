@@ -1,0 +1,22 @@
+[project]
+name = "final-project"
+version = "0.1.0"
+description = "final-project"
+authors = [
+    {name = "PoorvikaGirishBabu"}
+]
+
+requires-python = "<3.13,>=3.9"
+dependencies = [
+    "asyncpraw (>=7.8.1,<8.0.0)",
+    "pinecone-client (>=6.0.0,<7.0.0)",
+    "python-dotenv (>=1.1.0,<2.0.0)",
+    "sentence-transformers (>=4.0.2,<5.0.0)",
+    "scikit-learn (>=1.6.1,<2.0.0)",
+    "torch[cpu] (==2.6.0)",
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

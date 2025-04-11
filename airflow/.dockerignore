@@ -1,0 +1,43 @@
+# Ignore Python artifacts
+__pycache__/
+
+# Ignore virtual environments
+.venv/
+env/
+venv/
+
+# Ignore Jupyter notebooks and data dumps
+
+# Ignore logs
+logs/
+
+# Ignore dotenv and credentials
+.env
+.env.*
+
+# Ignore Poetry cache
+poetry.lock.*
+poetry.toml.*
+
+# Ignore Airflow logs and local state
+airflow.db
+airflow.cfg
+dags/__pycache__/
+dags/*.pyc
+dags/logs/
+tmp/
+
+# Ignore Git and editor configs
+.git/
+.gitignore
+.vscode/
+.idea/
+
+# Ignore markdown/docs
+README.md
+docs/
+tests/
+POC/
+
+huggingface_cache/
+POC/
