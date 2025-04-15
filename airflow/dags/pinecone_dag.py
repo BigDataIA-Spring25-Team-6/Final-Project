@@ -24,13 +24,22 @@ def fetch_task_fn(**kwargs):
     import asyncio
     from scripts.pinecone_rag import fetch_interview_tips
 
+
     subreddits = [
-        'cscareerquestions',  'softwareengineering', 'computerscience', 'careeradvice',
+        'cscareerquestions', 'datascience', 'dataengineering', 'MachineLearning',
+        'learnprogramming', 'leetcode', 'programming', 'softwareengineering',
+        'dataanalysis', 'bigdata', 'artificial', 'computerscience', 'careeradvice',
+        'jobs', 'engineering', 'technology', 'developer', 'coding', 'ITCareerQuestions', 'interviews'
     ]
+
+    # Roles of interest
     roles = [
-        'Software Engineer'
+        'Software Engineer', 'Data Engineer', 'Data Scientist',
+        'Data Analyst', 'Machine Learning Engineer', 'AI Engineer'
     ]
-    companies = ['Google']
+
+    # MAANG companies
+    companies = ['Meta', 'Amazon', 'Apple', 'Netflix', 'Google']
 
     praw_client_id = os.getenv("PRAW_CLIENT_ID")
     praw_client_secret = os.getenv("PRAW_CLIENT_SECRET")
