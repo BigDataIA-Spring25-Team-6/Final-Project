@@ -80,6 +80,8 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
+    - ${AIRFLOW_PROJ_DIR:-.}/pinecone-sdk:/opt/airflow/pinecone-sdk
+    - ${AIRFLOW_PROJ_DIR:-.}/huggingface_cache:/opt/airflow/huggingface_cache
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
@@ -141,6 +143,8 @@ services:
       INDEX_NAME: ${INDEX_NAME}
       PRAW_CLIENT_ID: ${PRAW_CLIENT_ID}
       PRAW_CLIENT_SECRET: ${PRAW_CLIENT_SECRET}
+      PRAW_USER_AGENT: ${PRAW_USER_AGENT}
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
 
   
   airflow-scheduler:
@@ -159,6 +163,7 @@ services:
         condition: service_completed_successfully
     environment:
       <<: *airflow-common-env
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
 
   airflow-worker:
     <<: *airflow-common
@@ -299,3 +304,7 @@ services:
 
 volumes:
   postgres-db-volume:
+
+networks:
+  default:
+    name: airflow-net

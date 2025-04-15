@@ -1,21 +1,28 @@
-[project]
+[tool.poetry]
 name = "final-project"
 version = "0.1.0"
 description = "final-project"
-authors = [
-    {name = "PoorvikaGirishBabu"}
-]
+authors = ["PoorvikaGirishBabu"]
+license = ""
+readme = ""
 
-requires-python = "<3.13,>=3.9"
-dependencies = [
-    "asyncpraw (>=7.8.1,<8.0.0)",
-    "pinecone-client (>=6.0.0,<7.0.0)",
-    "python-dotenv (>=1.1.0,<2.0.0)",
-    "sentence-transformers (>=4.0.2,<5.0.0)",
-    "scikit-learn (>=1.6.1,<2.0.0)",
-    "torch[cpu] (==2.6.0)",
-]
+[tool.poetry.dependencies]
+python = ">=3.9,<3.13"
+asyncpraw = ">=7.8.1,<8.0.0"
+python-dotenv = ">=1.1.0,<2.0.0"
+sentence-transformers = "^2.5.1"
+scikit-learn = ">=1.6.1,<2.0.0"
+torch = { version = "^2.2.1+cpu", source = "pytorch" }
+numpy = "^1.26.4"
+pandas = "^2.2.2"
 
+[tool.poetry.dependencies.pinecone]
+path = "pinecone-sdk"
+
+[[tool.poetry.source]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "supplemental"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

@@ -4,7 +4,7 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 
 # Load Sentence Transformer model (cached)
-embedding_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2", cache_folder="huggingface_cache")
+embedding_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2", cache_folder="/opt/airflow/huggingface_cache")
 
 # Function to tokenize sentences
 def tokenize_sentences(text):
@@ -12,7 +12,7 @@ def tokenize_sentences(text):
 
 # Function to compute embeddings
 def compute_embeddings(sentences):
-    return embedding_model.encode(sentences, convert_to_numpy=True)
+    return embedding_model.encode(sentences, convert_to_numpy=True, batch_size=8)
 
 def cluster_based_chunking(document, max_chunk_size=500, similarity_threshold=0.75):
     sentences = tokenize_sentences(document)
