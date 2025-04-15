@@ -5,7 +5,7 @@ from datetime import datetime
 from pinecone import Pinecone, ServerlessSpec
 from scripts.chunking import embedding_model
 import uuid
-#from scripts.validations import is_valid_post
+from scripts.validations import is_valid_post
 
 # Embed text using the sentence transformer model
 def embed_texts(texts):
@@ -24,15 +24,10 @@ def get_or_create_index(api_key, environment, index_name):
     return pc.Index(index_name)
 
 def add_chunks_to_pinecone(chunks, post, role=None, company=None, api_key=None, environment=None, index_name=None):
-    from scripts.pinecone_rag import embed_texts
 
     if not chunks:
         print("No chunks to upload.")
         return 0
-    
-    # if not is_valid_post(post):
-    #     print(f"Post failed validation. Skipping upload for post ID: {post.get('id')}")
-    #     return 0
     
     index = get_or_create_index(api_key, environment, index_name)
 
@@ -79,26 +74,40 @@ logger = logging.getLogger(__name__)
 #         for role in roles:
 #             for company in companies:
 #                 query = f"{role} interview tips {company}"
+#                 logger.info(f"🔍 Processing query: '{query}'")
+
 #                 for subreddit_name in subreddits:
-#                     subreddit = await reddit.subreddit(subreddit_name)
-#                     async for post in subreddit.search(query, limit=limit, sort='relevance'):
-#                         if (
-#                             post.score >= min_upvotes and
-#                             not post.stickied and
-#                             start_timestamp <= post.created_utc < end_timestamp
-#                         ):
-#                             posts.append({
-#                                 'id': post.id,
-#                                 'title': post.title,
-#                                 'text': post.selftext,
-#                                 'subreddit': subreddit_name,
-#                                 'role': role,
-#                                 'company': company
-#                             })
+#                     logger.info(f"📚 Searching in subreddit: r/{subreddit_name}")
+#                     try:
+#                         subreddit = await reddit.subreddit(subreddit_name)
+#                         async for post in subreddit.search(query, limit=limit, sort='relevance'):
+#                             if (
+#                                 post.score >= min_upvotes and
+#                                 not post.stickied and
+#                                 start_timestamp <= post.created_utc < end_timestamp
+#                             ):
+#                                 logger.info(f"✅ Collected post: {post.title} (score: {post.score})")
+#                                 posts.append({
+#                                     'id': post.id,
+#                                     'title': post.title,
+#                                     'text': post.selftext,
+#                                     'subreddit': subreddit_name,
+#                                     'role': role,
+#                                     'company': company
+#                                 })
+#                     except Exception as search_err:
+#                         logger.error(f"❌ Error searching subreddit '{subreddit_name}' for query '{query}': {search_err}", exc_info=True)
+#     except Exception as e:
+#         logger.error(f"🔥 Unexpected error in fetch_interview_tips: {e}", exc_info=True)
+#         raise
 #     finally:
 #         await reddit.close()
+#         logger.info("🔒 Reddit client connection closed.")
+
+#     logger.info(f"📦 Total posts collected: {len(posts)}")
 #     posts = posts[:5]
 #     return posts
+
 async def fetch_interview_tips(subreddits, roles, companies, limit=1, min_upvotes=10,
                                 client_id=None, client_secret=None, user_agent=None):
     reddit = init_reddit(client_id, client_secret, user_agent)
@@ -125,15 +134,22 @@ async def fetch_interview_tips(subreddits, roles, companies, limit=1, min_upvote
                                 not post.stickied and
                                 start_timestamp <= post.created_utc < end_timestamp
                             ):
-                                logger.info(f"✅ Collected post: {post.title} (score: {post.score})")
-                                posts.append({
+                                post_dict = {
                                     'id': post.id,
                                     'title': post.title,
-                                    'text': post.selftext,
+                                    'selftext': post.selftext,
                                     'subreddit': subreddit_name,
                                     'role': role,
                                     'company': company
-                                })
+                                }
+
+                                if is_valid_post(post_dict):  # ✅ Apply validation
+                                    logger.info(f"✅ Valid post: {post.title} (score: {post.score})")
+                                    # Rename selftext -> text to match downstream pipeline
+                                    post_dict['text'] = post_dict.pop('selftext')
+                                    posts.append(post_dict)
+                                else:
+                                    logger.info(f"⛔ Skipped invalid post: {post.id}")
                     except Exception as search_err:
                         logger.error(f"❌ Error searching subreddit '{subreddit_name}' for query '{query}': {search_err}", exc_info=True)
     except Exception as e:
@@ -143,6 +159,7 @@ async def fetch_interview_tips(subreddits, roles, companies, limit=1, min_upvote
         await reddit.close()
         logger.info("🔒 Reddit client connection closed.")
 
-    logger.info(f"📦 Total posts collected: {len(posts)}")
-    posts = posts[:5]
+    logger.info(f"📦 Total posts collected after validation: {len(posts)}")
+    posts = posts[:5]  # optionally cap the number
     return posts
+
