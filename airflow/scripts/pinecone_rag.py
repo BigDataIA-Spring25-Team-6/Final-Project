@@ -60,54 +60,6 @@ def init_reddit(client_id, client_secret, user_agent):
 
 logger = logging.getLogger(__name__)
 
-# async def fetch_interview_tips(subreddits, roles, companies, limit=1, min_upvotes=10,
-#                                 client_id=None, client_secret=None, user_agent=None):
-#     reddit = init_reddit(client_id, client_secret, user_agent)
-#     posts = []
-
-#     start_date = datetime(2024, 1, 1)
-#     end_date = datetime(2025, 3, 31)
-#     start_timestamp = time.mktime(start_date.timetuple())
-#     end_timestamp = time.mktime(end_date.timetuple())
-
-#     try:
-#         for role in roles:
-#             for company in companies:
-#                 query = f"{role} interview tips {company}"
-#                 logger.info(f"🔍 Processing query: '{query}'")
-
-#                 for subreddit_name in subreddits:
-#                     logger.info(f"📚 Searching in subreddit: r/{subreddit_name}")
-#                     try:
-#                         subreddit = await reddit.subreddit(subreddit_name)
-#                         async for post in subreddit.search(query, limit=limit, sort='relevance'):
-#                             if (
-#                                 post.score >= min_upvotes and
-#                                 not post.stickied and
-#                                 start_timestamp <= post.created_utc < end_timestamp
-#                             ):
-#                                 logger.info(f"✅ Collected post: {post.title} (score: {post.score})")
-#                                 posts.append({
-#                                     'id': post.id,
-#                                     'title': post.title,
-#                                     'text': post.selftext,
-#                                     'subreddit': subreddit_name,
-#                                     'role': role,
-#                                     'company': company
-#                                 })
-#                     except Exception as search_err:
-#                         logger.error(f"❌ Error searching subreddit '{subreddit_name}' for query '{query}': {search_err}", exc_info=True)
-#     except Exception as e:
-#         logger.error(f"🔥 Unexpected error in fetch_interview_tips: {e}", exc_info=True)
-#         raise
-#     finally:
-#         await reddit.close()
-#         logger.info("🔒 Reddit client connection closed.")
-
-#     logger.info(f"📦 Total posts collected: {len(posts)}")
-#     posts = posts[:5]
-#     return posts
-
 async def fetch_interview_tips(subreddits, roles, companies, limit=1, min_upvotes=10,
                                 client_id=None, client_secret=None, user_agent=None):
     reddit = init_reddit(client_id, client_secret, user_agent)
@@ -162,4 +114,3 @@ async def fetch_interview_tips(subreddits, roles, companies, limit=1, min_upvote
     logger.info(f"📦 Total posts collected after validation: {len(posts)}")
     posts = posts[:5]  # optionally cap the number
     return posts
-
