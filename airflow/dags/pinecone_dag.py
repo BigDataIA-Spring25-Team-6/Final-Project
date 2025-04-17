@@ -24,13 +24,22 @@ def fetch_task_fn(**kwargs):
     import asyncio
     from scripts.pinecone_rag import fetch_interview_tips
 
-    # Get dynamic inputs from DAG run config
-    role = kwargs['dag_run'].conf.get("role")
-    company = kwargs['dag_run'].conf.get("company")
+    #Roles of interest
+    roles = [
+        'Software Engineer', 'Data Engineer', 'Data Scientist',
+        'Data Analyst', 'Machine Learning Engineer', 'AI Engineer'
+    ]
 
-    if not role or not company:
-        raise ValueError("Both 'role' and 'company' must be provided in DAG run config.")
+    # MAANG companies
+    companies = ['Meta', 'Amazon', 'Apple', 'Netflix', 'Google']
     
+    #Roles of interest
+    # roles = [
+    #     'Software Engineer'
+    # ]
+
+    #MAANG companies
+    # companies = ['Google']
     subreddits = [
         'cscareerquestions', 'datascience', 'dataengineering', 'MachineLearning',
         'learnprogramming', 'leetcode', 'programming', 'softwareengineering',
@@ -38,23 +47,14 @@ def fetch_task_fn(**kwargs):
         'jobs', 'engineering', 'technology', 'developer', 'coding', 'ITCareerQuestions', 'interviews'
     ]
 
-    # # Roles of interest
-    # roles = [
-    #     'Software Engineer', 'Data Engineer', 'Data Scientist',
-    #     'Data Analyst', 'Machine Learning Engineer', 'AI Engineer'
-    # ]
-
-    # # MAANG companies
-    # companies = ['Meta', 'Amazon', 'Apple', 'Netflix', 'Google']
-
     praw_client_id = os.getenv("PRAW_CLIENT_ID")
     praw_client_secret = os.getenv("PRAW_CLIENT_SECRET")
     praw_user_agent = os.getenv("PRAW_USER_AGENT", "airflow-reddit-bot")
 
     return asyncio.run(fetch_interview_tips(
         subreddits=subreddits,
-        roles=[role],
-        companies=[company],
+        roles=roles,
+        companies=companies,
         limit=1,
         client_id=praw_client_id,
         client_secret=praw_client_secret,
@@ -114,7 +114,6 @@ def upload_task_fn(**kwargs):
 fetch_task = PythonOperator(
     task_id='fetch_reddit_posts',
     python_callable=fetch_task_fn,
-    provide_context=True,
     dag=dag,
 )
 
