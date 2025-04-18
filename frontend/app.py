@@ -7,12 +7,12 @@ st.title("🔍 FAQ Agent - Interview Help")
 
 # Predefined options for selectboxes
 roles = [
-    "Software Engineer", "Data Scientist", "Product Manager",
-    "DevOps Engineer", "Backend Developer", "Frontend Engineer"
+    "Software Engineer", "Data Engineer", "Data Scientist",
+    "Data Analyst", "Machine Learning Engineer", "AI Engineer"
 ]
 
 companies = [
-    "Google", "Amazon", "Meta", "Microsoft", "Netflix", "OpenAI"
+    "Meta", "Amazon", "Apple", "Netflix", "Google"
 ]
 
 # Dropdowns for role and company
